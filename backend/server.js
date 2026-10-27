@@ -2,14 +2,31 @@ const express = require("express");
 const { Pool } = require("pg");
 
 const app = express();
-const port = Number.parseInt(process.env.API_PORT || "5000", 10);
-const pool = new Pool({
-  host: process.env.DB_HOST || "localhost",
-  port: Number.parseInt(process.env.DB_PORT || "5432", 10),
-  database: process.env.DB_NAME || "shop",
-  user: process.env.DB_USER || "shop_user",
-  password: process.env.DB_PASSWORD,
-});
+const port = Number.parseInt(
+  process.env.PORT || process.env.API_PORT || "5000",
+  10,
+);
+
+const isCloudDb = Boolean(process.env.DATABASE_URL);
+const useSsl =
+  process.env.DB_SSL === "true" ||
+  (isCloudDb && process.env.DB_SSL !== "false");
+
+const poolConfig = process.env.DATABASE_URL
+  ? {
+      connectionString: process.env.DATABASE_URL,
+      ssl: useSsl ? { rejectUnauthorized: false } : false,
+    }
+  : {
+      host: process.env.DB_HOST || "localhost",
+      port: Number.parseInt(process.env.DB_PORT || "5432", 10),
+      database: process.env.DB_NAME || "shop",
+      user: process.env.DB_USER || "shop_user",
+      password: process.env.DB_PASSWORD,
+      ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
+    };
+
+const pool = new Pool(poolConfig);
 
 const sampleProducts = [
   {
