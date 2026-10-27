@@ -12,7 +12,7 @@ A small, full-stack shopping application built as a college DevOps and container
 ## Project structure
 
 ```text
-mini-ecommerce/
+Root
 ├── frontend/
 │   ├── src/
 │   │   ├── App.jsx
